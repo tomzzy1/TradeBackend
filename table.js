@@ -1,4 +1,5 @@
 const Koa = require('koa')
+const Router = require('koa-router')
 const app = new Koa()
 
 const tokens = {
@@ -43,46 +44,69 @@ const tokens = {
     }
   }
 
-app.use( async ( ctx ) => {
+
+let router = new Router(
+  {
+    prefix: '/dev-api/vue-element-admin'
+  }
+)
+
+let user = new Router(
+  {
+    prefix: '/user'
+  }
+)
+
+user.get('/info', async (ctx) =>
+{
+  console.log('processing get user info')
+  ctx.body = 
+  {
+    data: users['admin-token'],
+    code: 20000
+  }
+  console.log(ctx.body)
+})
+.post('/login', async (ctx) => 
+{
+  console.log('processing login')
+  let postData = await parsePostData(ctx)
+  let parsedData = JSON.parse(postData)
+  console.log(parsedData)
+  ctx.body = 
+  {
+    data: [parsedData],
+    code: 20000
+  }
+  console.log(ctx.body)
+
+})
+.post('/logout', async (ctx) => 
+{
+  console.log('processing logout')
+  ctx.body = 
+  {
+    data: 'success',
+    code: 20000
+  }
+})
+
+router.use(user.routes(), user.allowedMethods())
+
+app.use(router.routes())
+
+/*app.use( async ( ctx ) => {
 
     //console.log(ctx)
-    
-
     let url = ctx.url
     console.log(url)
     console.log(ctx.request)
-    if (ctx.method == 'GET')
-    {
-        if (url === '/dev-api/vue-element-admin/user/info')
-        {
-            ctx.body = 
-            {
-                data: users['admin-token'],
-                code: 20000
-            }
-            console.log(ctx.body)
-        }
+    ctx.body = 
+    { 
+      code: 20000
     }
-    if (ctx.method == 'POST')
-    {
-        if (url === '/dev-api/vue-element-admin/user/login')
-        {
-            let postData = await parsePostData(ctx)
-            let data = JSON.parse(postData)
-            console.log(data)
-            if (data['username'] === 'buyer')
-            {
-                ctx.body = 
-                {
-                    data: ['buyer'],
-                    code: 20000
-                }
-                console.log(ctx.body)
-            }
-            //console.log(postData)
-        }
-    }
-  })
+   
+  })*/
   
   app.listen(9527, () => {
     console.log('[demo] request get is starting at port 9527')
