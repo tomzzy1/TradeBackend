@@ -54,9 +54,10 @@ user.get('/info', async (ctx) =>
   //let parsedData = JSON.parse(postData)
   //console.log(parsedData)
   console.log(ctx.query)
+  let parsedData = JSON.parse(ctx.query.token)
   ctx.body = 
   {
-    data: users['admin-token'],
+    data: users[parsedData.token],
     code: 20000
   }
   console.log(ctx.body)
