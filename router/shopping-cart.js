@@ -7,37 +7,20 @@ let cart = new Router({
 })
 
 cart.get('/list', async (ctx) => {
-    //let goodsList = []
     console.log(ctx.query)
     let params = ctx.query
     let page = params.page
     let limit = params.limit
-    let [cart, _] = await pool.query("SELECT id, number from shopping_cart")
-    console.log('shopping_cart get list')
-    console.log(cart)  
-    let waitList = []
-    for (let i = (page - 1) * limit; i < page * limit; i++)
-    {
-        let [goods, _] = await pool.query("SELECT id, name, date, price FROM goods WHERE id=?", cart[i].id)
-        waitList.push(goods)
-    }
-    let goodsList = await Promise.all(waitList)
-    console.log(goodsList)
-    let List = []
-    for (let i = 0; i < goodsList.length; i++)
-    {
-        let [result] = Object.values(JSON.parse(JSON.stringify(goodsList[i])))
-        result.number = cart[i].number
-        List.push(result)
-        console.log(result)
-    }
-    //console.log(goodsList)
+    let [goods, _] = await pool.query("SELECT s.id, g.name, g.date, g.price, s.number FROM shopping_cart s JOIN goods g ON s.id = g.id")
+    let length = goods.length
+    goods = goods.filter((value, index) => index < limit * page && index >= limit * (page - 1))
+    console.log(goods)
     ctx.body = {
         code: 20000,
         data: 
         {
-            items: List,
-            total: List.length
+            items: goods,
+            total: length
         }
     }
 
