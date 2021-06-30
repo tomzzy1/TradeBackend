@@ -8,11 +8,14 @@ let cart = new Router({
 
 cart.get('/list', async (ctx) => {
     //let goodsList = []
+    let params = JSON.parse(ctx.query.query)
+    let page = params.page
+    let limit = params.limit
     let [cart, _] = await pool.query("SELECT id, number from shopping_cart")
     console.log('shopping_cart get list')
     console.log(cart)  
     let waitList = []
-    for (let i = 0; i < cart.length; i++)
+    for (let i = (page - 1) * limit; i < page * limit; i++)
     {
         let [goods, _] = await pool.query("SELECT id, name, date, price FROM goods WHERE id=?", cart[i].id)
         waitList.push(goods)
