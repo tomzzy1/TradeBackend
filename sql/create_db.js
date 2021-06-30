@@ -21,7 +21,7 @@ mysqlPool.query("SELECT * FROM goods", (err, results, fields) =>{
         console.log(err)
 })
 
-for (let i = 0; i < 100; i += 10)
+for (let i = 0; i < 100; i += 2)
 {
     mysqlPool.query("INSERT IGNORE INTO shopping_cart VALUES(?, 1)", i, (err, results, fields) => {
         if (err)

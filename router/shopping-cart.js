@@ -8,7 +8,8 @@ let cart = new Router({
 
 cart.get('/list', async (ctx) => {
     //let goodsList = []
-    let params = JSON.parse(ctx.query.query)
+    console.log(ctx.query)
+    let params = ctx.query
     let page = params.page
     let limit = params.limit
     let [cart, _] = await pool.query("SELECT id, number from shopping_cart")
