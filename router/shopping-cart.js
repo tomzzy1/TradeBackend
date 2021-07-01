@@ -26,6 +26,7 @@ cart.get('/list', async (ctx) => {
 
 }).post('/update', async (ctx) => {
     let postData = await parsePostData(ctx)
+    console.log("=====testing the connectivity of backend and platform !! =====")
     if (!postData)
         console.log('error!')
     let parsedData = JSON.parse(postData)

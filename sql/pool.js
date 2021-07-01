@@ -2,7 +2,7 @@ import mysql from 'mysql2'
 
 let pool = mysql.createPool({
     user: "root",
-    password: "123456",
+    password: "12345678",
     database: "user_schema",
 }).promise()
 
