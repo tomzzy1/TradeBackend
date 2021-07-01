@@ -29,7 +29,7 @@ for (let i = 0; i < 10; i += 1)
     let length = country.length
     console.log("======")
     console.log(i%6)
-    mysqlPool.query("INSERT IGNORE INTO dataset VALUES(?, 'ZJU', 'testing dataset', '1GB', 'ZJU Data Center', '2021')", [i,country[i%6],'testing dataset' + String(i),String(i)+'GB',source[i%6],time[i%6]], (err, results, fields) => {
+    mysqlPool.query("INSERT IGNORE INTO dataset VALUES(?, ?, ?, ?, ?, ?)", [i,country[i%6],'testing dataset' + String(i),String(i)+'GB',source[i%6],time[i%6]], (err, results, fields) => {
         console.log(results)
         if (err)
             console.log(err)
