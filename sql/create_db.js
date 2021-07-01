@@ -2,7 +2,7 @@ import mysql from 'mysql2'
 
 let mysqlPool = mysql.createPool({
     user: "root",
-    password: "12345678",
+    password: "123456",
     database: "user_schema",
 })
 
@@ -21,7 +21,7 @@ let mysqlPool = mysql.createPool({
 //         console.log(err)
 // })
 
-for (let i = 0; i < 10; i += 1)
+for (let i = 0; i < 100; i += 1)
 {
     let country = ['CHINA','USA','UK','JAPAN','RUSSIA','AUSTRALIA']
     let source = ['-a-','-b-','-c-','-d-','-e-','-f-']
