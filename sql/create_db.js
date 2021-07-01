@@ -21,7 +21,7 @@ let mysqlPool = mysql.createPool({
 //         console.log(err)
 // })
 
-for (let i = 0; i < 10; i += 1)
+for (let i = 0; i < 100; i += 1)
 {
     let country = ['CHINA','USA','UK','JAPAN','RUSSIA','AUSTRALIA']
     let source = ['-a-','-b-','-c-','-d-','-e-','-f-']
