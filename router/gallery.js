@@ -19,8 +19,8 @@ gallery.get('/list', async (ctx) => {
     let [dss, _] = await pool.query("SELECT * FROM dataset")
     let length = dss.length
     dss = dss.filter((value, index) => index < limit * pagenum && index >= limit * (pagenum - 1))
-    // console.log("=====processing query!=====")
-    // console.log(dss)
+    console.log("=====processing query!=====")
+    console.log(dss)
 
     ctx.body = {
         code: 20000,
