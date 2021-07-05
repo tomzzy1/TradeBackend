@@ -104,4 +104,4 @@ dist
 .tern-port
 
 # Dataset File
-.csv
+archive/
