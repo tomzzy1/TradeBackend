@@ -3,7 +3,7 @@ import pool from '../sql/pool.js'
 
 let mysqlPool = mysql.createPool({
     user: "root",
-    password: "12345678",
+    password: "123456",
     database: "user_schema",
 })
 
