@@ -108,3 +108,6 @@ archive/
 
 # Uploaded File
 uploads/
+
+# temp files
+temp/
