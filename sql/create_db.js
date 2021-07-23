@@ -1,11 +1,4 @@
-import mysql from 'mysql2'
 import pool from '../sql/pool.js'
-
-let mysqlPool = mysql.createPool({
-    user: "root",
-    password: "123456",
-    database: "user_schema",
-})
 
 // for (let i = 0; i < 100; ++i)
 // {
@@ -22,25 +15,19 @@ let mysqlPool = mysql.createPool({
 //         console.log(err)
 // })
 
-// for (let i = 0; i < 100; i += 1)
-// {
-//     let country = ['CHINA','USA','UK','JAPAN','RUSSIA','AUSTRALIA']
-//     let source = ['-a-','-b-','-c-','-d-','-e-','-f-']
-//     let time = ['2009','2010','2011','2012','2013','2014']
-//     let length = country.length
-//     console.log("======")
-//     console.log(i%6)
-//     mysqlPool.query("INSERT IGNORE INTO dataset VALUES(?, ?, ?, ?, ?, ?)", [i,country[i%6],'testing dataset' + String(i),String(i)+'GB',source[i%6],time[i%6]], (err, results, fields) => {
-//         console.log(results)
-//         if (err)
-//             console.log(err)
-//     })
-// }
+//await pool.query('DELETE FROM goods_detail')
+for (let i = 0; i < 100; i += 1)
+{
+    let country = ['CHINA','USA','UK','JAPAN','RUSSIA','AUSTRALIA']
+    console.log("======")
+    console.log(i%6)
+    pool.query("INSERT IGNORE INTO goods_detail VALUES(?, ?, ?, ?)", [i ,'testing dataset', country[i % 6], i * i % 6], (err, results, fields) => {
+        console.log(results)
+        if (err)
+            console.log(err)
+    })
+}
 
-// for (let i = 0; i < 100; i++)
-// {
-//     mysqlPool.query("INSERT IGNORE INTO dataset VALUES(?)")
-// }
 
 // mysqlPool.query("SELECT * FROM shopping_cart", (err, results, fields) =>{
 //     console.log(results)
@@ -97,58 +84,58 @@ let mysqlPool = mysql.createPool({
 // for (let i = 0; i < 100; i += 1)
 // {
 /* only works for the testing dataset 'namelist' */
-let columns_list = ['FirstName','LastName','Country']
+// let columns_list = ['FirstName','LastName','Country']
 
-let question = {}
-for (let i = 0; i < columns_list.length; i +=1 ){
-    /* build a dict for different fields */
-    let query = "SELECT * FROM namelist WHERE " + columns_list[i] + "= '' "
-    let [results, _] = await pool.query(query)
-    question[columns_list[i]] = results
-}
-// console.log()
+// let question = {}
+// for (let i = 0; i < columns_list.length; i +=1 ){
+//     /* build a dict for different fields */
+//     let query = "SELECT * FROM namelist WHERE " + columns_list[i] + "= '' "
+//     let [results, _] = await pool.query(query)
+//     question[columns_list[i]] = results
+// }
+// // console.log()
  
 
-/* Insert into the dataset: crowdsourcing */
-let id = 0
-let ans_list = []
-let keys = Object.keys(question)
-for (let key in keys){
-    let column = keys[key]
-    // console.log(question[column])
-    for (let i in question[column]){
-        let curr_item = question[column][i]
-        /* TODO: update the q_str */
-        let q_str = "What's the '" + column + "' of the object with following properties? "
-        let hint = "LastName"
-        q_str += (hint + " is " + curr_item[hint] + "." )
-        // console.log(q_str)
-        let answer = ""
+// /* Insert into the dataset: crowdsourcing */
+// let id = 0
+// let ans_list = []
+// let keys = Object.keys(question)
+// for (let key in keys){
+//     let column = keys[key]
+//     // console.log(question[column])
+//     for (let i in question[column]){
+//         let curr_item = question[column][i]
+//         /* TODO: update the q_str */
+//         let q_str = "What's the '" + column + "' of the object with following properties? "
+//         let hint = "LastName"
+//         q_str += (hint + " is " + curr_item[hint] + "." )
+//         // console.log(q_str)
+//         let answer = ""
         
-        /* filling the answer string */
-        let [res,_] = await pool.query("SELECT " + column + " FROM namelist")
-        for(let i = 0; i<res.length;i+=1){
-            if(res[i][column] == '') continue 
-            if(ans_list.indexOf(res[i][column]) != -1){
-                // console.log("!")
-                continue
-            }
-            ans_list.push(res[i][column]) 
-        }
-        answer = ans_list.join(";")
-        // console.log(answer)
+//         /* filling the answer string */
+//         let [res,_] = await pool.query("SELECT " + column + " FROM namelist")
+//         for(let i = 0; i<res.length;i+=1){
+//             if(res[i][column] == '') continue 
+//             if(ans_list.indexOf(res[i][column]) != -1){
+//                 // console.log("!")
+//                 continue
+//             }
+//             ans_list.push(res[i][column]) 
+//         }
+//         answer = ans_list.join(";")
+//         // console.log(answer)
         
-        mysqlPool.query("INSERT IGNORE INTO crowdsourcing VALUES(?, ?, ?, ?, ?, ?)", [id, q_str, hint, answer, -1, 1], (err, results, fields) => {
-            // console.log(results)
-            if (err)
-                console.log(err)
-        })
+//         mysqlPool.query("INSERT IGNORE INTO crowdsourcing VALUES(?, ?, ?, ?, ?, ?)", [id, q_str, hint, answer, -1, 1], (err, results, fields) => {
+//             // console.log(results)
+//             if (err)
+//                 console.log(err)
+//         })
         
         
-        id += 1
-    }
+//         id += 1
+//     }
 
-}
+// }
 
 
 

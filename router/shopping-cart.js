@@ -65,6 +65,8 @@ cart.get('/list', async (ctx) => {
     {
         code: 20000
     }
+}).post('/buy', async (ctx) => {
+    console.log('processing buying dataset')
 })
 
 export default cart

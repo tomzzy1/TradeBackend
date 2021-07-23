@@ -111,3 +111,13 @@ uploads/
 
 # temp files
 temp/
+
+# query files
+query/
+
+# build files
+build/
+
+
+
+
