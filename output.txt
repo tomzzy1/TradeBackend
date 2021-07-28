@@ -1,7 +1,7 @@
 The size of token is: 
 0
 Time used for Eager Strategy: 
-52
+33
 Result set size: 
 4244
 The max number of query lineage set: 
@@ -9,7 +9,7 @@ The max number of query lineage set:
 The number of tuple in Lineage  set: 
 4266
 Time used of Approx: 
-2037
+1757
 Approx's derived base price: 
 176.607
 Approx's derived price: 
@@ -19,7 +19,7 @@ The quality:
 The number of tuple in Lineage  set: 
 4266
 Time used of Approx: 
-1988
+1788
 Approx's derived base price: 
 176.607
 Approx's derived price: 

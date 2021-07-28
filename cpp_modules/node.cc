@@ -18,9 +18,29 @@ void queryPrice(const CallbackInfo& args)
 	qp.query(args[1].ToString());
 }
 
+Boolean checkSQL(const CallbackInfo& args)
+{
+	sqlParser parser;
+	std::string sql = args[0].As<String>();
+	try
+	{
+		parser.parse(sql);
+	}
+	catch(...)
+	{
+		//std::cout << "Exception!\n";
+		//throw Error::New(args.Env(), "Fail to parse sql");
+		return Boolean::New(args.Env(), false);
+	}
+
+	return Boolean::New(args.Env(), true);
+	
+}
+
 Object Init(Env env, Object exports)
 {
 	exports.Set(String::New(env, "queryPrice"), Function::New(env, queryPrice));
+	exports.Set(String::New(env, "checkSQL"), Function::New(env, checkSQL));
 	return exports;
 }
 

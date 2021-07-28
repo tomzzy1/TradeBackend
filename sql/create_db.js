@@ -1,4 +1,18 @@
-import pool from '../sql/pool.js'
+import pool from './pool.js'
+import loadCSVIntoDataset from '../utils/loadCSV.js'
+
+//await pool.query("INSERT IGNORE INTO goods VALUES(100, 'NBA', '2000-01-02', 5000)")
+//await pool.query("INSERT IGNORE INTO goods_detail VALUES(100, 'NBA data', 'USA', 1)")
+
+await pool.query('DELETE FROM NBA')
+await pool.query("CREATE TABLE IF NOT EXISTS NBA (id INT, name VARCHAR(16))")
+for (let i = 0; i < 5; ++i)
+{
+    let root = './archive/'
+    let names = ['games', 'games_details', 'players', 'ranking', 'teams']
+    await pool.query("INSERT IGNORE INTO NBA VALUES(?, ?)", [i, names[i]])
+    loadCSVIntoDataset(root + names[i] + '.csv')
+}
 
 // for (let i = 0; i < 100; ++i)
 // {
@@ -16,7 +30,7 @@ import pool from '../sql/pool.js'
 // })
 
 //await pool.query('DELETE FROM goods_detail')
-for (let i = 0; i < 100; i += 1)
+/*for (let i = 0; i < 100; i += 1)
 {
     let country = ['CHINA','USA','UK','JAPAN','RUSSIA','AUSTRALIA']
     console.log("======")
@@ -26,7 +40,7 @@ for (let i = 0; i < 100; i += 1)
         if (err)
             console.log(err)
     })
-}
+}*/
 
 
 // mysqlPool.query("SELECT * FROM shopping_cart", (err, results, fields) =>{

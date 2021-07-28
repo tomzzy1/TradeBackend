@@ -5,6 +5,8 @@ import Router from 'koa-router'
 import gallery from './gallery.js'
 import crowdsourcing from './crowdsourcing.js'
 import recvFile from './receiveFile.js'
+import detail from './detail.js'
+
 
 let router = new Router(
 {
@@ -17,5 +19,6 @@ router.use(order.routes(), order.allowedMethods())
 router.use(gallery.routes(), gallery.allowedMethods())
 router.use(crowdsourcing.routes(), crowdsourcing.allowedMethods())
 router.use(recvFile.routes(), recvFile.allowedMethods())
+router.use(detail.routes(), detail.allowedMethods())
 
 export default router

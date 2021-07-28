@@ -1,4 +1,4 @@
-import pool from './sql/pool.js'
+import pool from '../sql/pool.js'
 import fs from 'fs'
 import path from 'path'
 import readline from 'readline'
@@ -7,6 +7,7 @@ async function loadCSVIntoDataset(filePath)
 {
 
 //let filePath = './archive/games.csv'
+await pool.query("SET GLOBAL local_infile=1")
 let filename = filePath.split('/')
 let dbname = (filename[filename.length - 1].split('.'))[0]
 console.log(dbname)
@@ -45,9 +46,9 @@ pool.query({
   infileStreamFactory: path => fs.createReadStream(filePath)
 })
 
-let [table, _] = await pool.query("SELECT * FROM " + dbname)
+//let [table, _] = await pool.query("SELECT * FROM " + dbname)
 
-console.log(table)
+//console.log(table)
 }
 
 //loadCSVIntoDataset('./archive/teams.csv')
