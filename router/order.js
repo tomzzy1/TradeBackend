@@ -26,6 +26,7 @@ order.get('/list', async (ctx) => {
     {
         total_prices += goods[i].price
     }
+    await pool.query("UPDATE orders SET total_price = ? WHERE id = ?", [total_prices, id])
     console.log(goods)
     ctx.body = {
         code: 20000,
@@ -37,17 +38,21 @@ order.get('/list', async (ctx) => {
         }
     }
 }).post('/cancel', async (ctx) => {
-    let postData = await parsePostData(ctx)
-    let parsedData = JSON.parse(postData)
-    console.log(parsedData)
-    await pool.query("UPDATE orders SET state = 1 WHERE id = ?", parsedData.id)
+    //let postData = await parsePostData(ctx)
+    //let parsedData = JSON.parse(postData)
+    //console.log(parsedData)
+    let [oc, _0] = await pool.query("SELECT id FROM orders")
+    let id = oc.length
+    await pool.query("UPDATE orders SET state = 1 WHERE id = ?", id)
     ctx.body = {
         code: 20000
     }
 }).post('/complete', async (ctx) => {
-    let postData = await parsePostData(ctx)
-    let parsedData = JSON.parse(postData)
-    await pool.query("UPDATE orders SET state = 2 WHERE id = ?", parsedData.id)
+    //let postData = await parsePostData(ctx)
+    //let parsedData = JSON.parse(postData)
+    let [oc, _0] = await pool.query("SELECT id FROM orders")
+    let id = oc.length
+    await pool.query("UPDATE orders SET state = 2 WHERE id = ?", id)
     ctx.body = {
         code: 20000
     }
