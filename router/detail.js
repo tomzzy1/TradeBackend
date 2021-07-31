@@ -46,6 +46,32 @@ detail.get('/list', async (ctx) => {
             status: queryPricer.checkSQL(ctx.query.query)
         }
     }
+}).post('/add_to_cart', async (ctx) => {
+    let postData = await parsePostData(ctx)
+    let parsedData = JSON.parse(postData)
+    let [ds_name, _0] = await pool.query('SELECT name, price FROM goods WHERE id = ?', parsedData.id)
+    console.log(ds_name[0])
+    let [tb_names, _1] = await pool.query('SELECT name FROM ' + ds_name[0].name)
+    tb_names = tb_names.map((value) => value.name)
+    console.log(parsedData)
+    let price = queryPricer.queryPrice(tb_names, parsedData.query, [0.5, 0.5, ds_name[0].price])
+    if (parsedData.complement)
+        price += 100
+    let [dummy, _2] = await pool.query("INSERT IGNORE INTO shopping_cart (number, query, date, dataset_id,\
+        price) VALUES(1, ?, NOW(), ?, ?)", [parsedData.query, parsedData.id, price])
+    ctx.body = {
+        code: 20000,
+        dummy
+    }
+
 })
+
+function UP(query) {
+    
+}
+
+function UCP() {
+
+}
 
 export default detail

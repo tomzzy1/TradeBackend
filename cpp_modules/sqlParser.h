@@ -25,8 +25,9 @@ public:
 				select_fields.push_back(select_field);
 				std::cout << select_field << '\n';
 				select_field.clear();
+				++i;
 			}
-			if (q[i] == ' ')
+			while (q[i] == ' ')
 			{	
 				++i;
 			}
@@ -54,6 +55,7 @@ public:
 			if (check_WHERE(i + 1))
 			{
 				++i;
+				tables.emplace_back(table, alias);
 				std::cout << "break\n";
 				break;
 			}
@@ -154,7 +156,7 @@ public:
 			}
 			else
 			{
-				values.emplace_back(value, std::string());
+				values.emplace_back(std::string(), value);
 			}
 			if (i == query.size())
 			{

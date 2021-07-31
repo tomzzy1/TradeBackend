@@ -4,7 +4,15 @@ import loadCSVIntoDataset from '../utils/loadCSV.js'
 //await pool.query("INSERT IGNORE INTO goods VALUES(100, 'NBA', '2000-01-02', 5000)")
 //await pool.query("INSERT IGNORE INTO goods_detail VALUES(100, 'NBA data', 'USA', 1)")
 
-await pool.query('DELETE FROM NBA')
+await pool.query("TRUNCATE orders")
+await pool.query("TRUNCATE order_contents")
+//await pool.query("TRUNCATE shopping_cart")
+//let [result, _] = await pool.query('INSERT INTO test_table (date) VALUES(NOW())')
+//console.log(result)
+//let [cart, _] = await pool.query('SELECT * FROM shopping_cart')
+//console.log(cart)
+//await pool.query('DELETE FROM shopping_cart')
+/*await pool.query('DELETE FROM NBA')
 await pool.query("CREATE TABLE IF NOT EXISTS NBA (id INT, name VARCHAR(16))")
 for (let i = 0; i < 5; ++i)
 {
@@ -12,7 +20,7 @@ for (let i = 0; i < 5; ++i)
     let names = ['games', 'games_details', 'players', 'ranking', 'teams']
     await pool.query("INSERT IGNORE INTO NBA VALUES(?, ?)", [i, names[i]])
     loadCSVIntoDataset(root + names[i] + '.csv')
-}
+}*/
 
 // for (let i = 0; i < 100; ++i)
 // {

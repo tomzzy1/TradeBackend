@@ -3,7 +3,7 @@
 
 using namespace Napi;
 
-void queryPrice(const CallbackInfo& args)
+Number queryPrice(const CallbackInfo& args)
 {
 	QueryPrice qp;
 	Array arr = args[0].As<Array>();
@@ -14,8 +14,25 @@ void queryPrice(const CallbackInfo& args)
 		std::string val = arr.Get(i).ToString();
 		paths.push_back(val);
 	}
+
+	Array arr2 = args[2].As<Array>();
+	std::vector<float> params;
+	for (int i = 0; i < arr2.Length(); ++i)
+	{
+		params.push_back(arr2.Get(i).As<Number>().FloatValue());
+	}
+
 	qp.load(paths);
-	qp.query(args[1].ToString());
+	float price = -1;
+	try
+	{
+		price = qp.query(args[1].ToString(), params);
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
+	return Number::New(args.Env(), price);
 }
 
 Boolean checkSQL(const CallbackInfo& args)

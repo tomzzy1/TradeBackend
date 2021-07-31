@@ -544,7 +544,7 @@ public:
 		
 		if (parser.tables.size() > 1)
 			type = 2;
-		else if (parser.operations.size() > 1)
+		else if (parser.operations.size() >= 1)
 			type = 0;
 		std::cout << "table size " << parser.tables.size() << "type " << type << '\n';
 		//queryin >> type; //S=0, P =1, J =2, SPJ =3;
@@ -673,19 +673,30 @@ public:
 			char c4[8];
 			output_result(_itoa(HQ[0].projectionP, c4, 10));
 			//queryin >> HQ[0].projectionNumber;//投影的维度数
-			HQ[0].projectionNumber = parser.select_fields.size();
-			output_result("#Critical attributes in Projection:");
-			char c5[8];
-			output_result(_itoa(HQ[0].projectionNumber, c5, 10));
-			std::cout << "Table index in Projection:" << HQ[0].projectionP << endl;
-			std::cout << "#Critical attributes  in Projection:" << HQ[0].projectionNumber << endl;
+			if (parser.select_fields[0] == std::string("*", 1))
+			{
+				HQ[0].projectionNumber = dim[t];
+				for (int i = 0; i < dim[t]; ++i)
+				{
+					HQ[0].projectionAttr.push_back(DA[t].attrName[i]);
+				}
+			}
+			else
+			{
+				HQ[0].projectionNumber = parser.select_fields.size();
+				output_result("#Critical attributes in Projection:");
+				char c5[8];
+				output_result(_itoa(HQ[0].projectionNumber, c5, 10));
+				std::cout << "Table index in Projection:" << HQ[0].projectionP << endl;
+				std::cout << "#Critical attributes  in Projection:" << HQ[0].projectionNumber << endl;
 
-			for (int i = 0; i < HQ[0].projectionNumber; i++) {
-				string attr = parser.select_fields[i];
-				//queryin >> attr;    //第八行是投影的属性名
-				HQ[0].projectionAttr.push_back(parser.select_fields[i]);
-				output_result("Critical attributes in Projection:");
-				output_result(attr);
+				for (int i = 0; i < HQ[0].projectionNumber; i++) {
+					string attr = parser.select_fields[i];
+					//queryin >> attr;    //第八行是投影的属性名
+					HQ[0].projectionAttr.push_back(parser.select_fields[i]);
+					output_result("Critical attributes in Projection:");
+					output_result(attr);
+				}
 			}
 
 		}
@@ -1247,6 +1258,7 @@ public:
 		{
 			paths.push_back(default_path + "archive\\" + n + ".csv");
 		}
+		g_viewNumber = v.size();
 	}
 
 	void init()                                                                     //作用：将各个表的属性写入到DA中，注意：前后的顺序和表的前后顺序是相关的
@@ -2504,7 +2516,7 @@ public:
 
 	float phi;
 
-	int query(const std::string& sqlQuery)
+	int query(const std::string& sqlQuery, std::vector<float> params)
 	{
 		//parser.parse("SELECT * FROM games g, games_details gd WHERE g.GAME_ID = gd.GAME_ID");
 		//parser.parse("SELECT * FROM teams t, players p WHERE t.TEAM_ID = p.TEAM_ID");
@@ -2524,11 +2536,14 @@ public:
 			g_b0 = atof(argv[3]);
 			g_label = atoi(argv[4]);
 			g_viewNumber = atoi(argv[5]); //表的个数
-			g_queryNumber = atoi(argv[6]); //表的个数
+			g_queryNumber = atoi(argv[6]); 
 			g_missing_rate = atof(argv[7]);
 			datasize = atoi(argv[8]);
 			string out_file_name(argv[9]);
 			string queryPath = default_path + argv[10];*/
+		g_alpha = params[0];
+		g_a = params[1];
+		g_b0 = params[2];
 
 		printf("g_alpha = %f, g_a = %f, g_b0 = %f, g_label = %d, g_viewNumber = %d, g_missing_rate = %f, datasize=%d, g_queryNumber = %d\n", g_alpha, g_a, g_b0, g_label, g_viewNumber, g_missing_rate, datasize, g_queryNumber);
 		//std::cout << out_file_name << endl;
@@ -2766,7 +2781,7 @@ public:
 
 				std::cout << "---------------------------------------------------------------" << endl;
 				std::cout << "Starting the approximate algorithm.." << endl;
-				HistoryApprox(phi);
+				//HistoryApprox(phi);
 				history_price += g_price;
 				Approx(phi);
 				std::cout << "**********************************************************" << endl;
@@ -2936,7 +2951,7 @@ public:
 		*/
 		output.close();
 
-		return 0;
+		return no_history_price;
 	}
 };
 

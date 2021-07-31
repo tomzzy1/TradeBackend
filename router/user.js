@@ -87,6 +87,6 @@ user.get('/info', async (ctx) =>
     data: 'success',
     code: 20000
   }
-})
+}).redirect('/login:1', '/login')
 
 export default user
