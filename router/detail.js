@@ -1,7 +1,7 @@
 import Router from 'koa-router'
 import pool from '../sql/pool.js'
 import {parsePostData, parseQueryStr} from '../utils/parsePostData.js'
-import {queryPricer} from '../queryPricer.cjs'
+import {cppModule} from '../cppModule.cjs'
 
 //let queryPricer = require('bindings')('queryPricer.node')
 //import queryPricer from '../build/Release/queryPricer'
@@ -43,7 +43,7 @@ detail.get('/list', async (ctx) => {
     ctx.body = {
         code: 20000,
         data: {
-            status: queryPricer.checkSQL(ctx.query.query)
+            status: cppModule.checkSQL(ctx.query.query)
         }
     }
 }).post('/add_to_cart', async (ctx) => {
@@ -54,9 +54,18 @@ detail.get('/list', async (ctx) => {
     let [tb_names, _1] = await pool.query('SELECT name FROM ' + ds_name[0].name)
     tb_names = tb_names.map((value) => value.name)
     console.log(parsedData)
-    let price = queryPricer.queryPrice(tb_names, parsedData.query, [0.5, 0.5, ds_name[0].price])
+    let [params, _3] = await pool.query("SELECT price_coeffiecient, sensitivity_degree, strategy FROM goods_detail \
+    WHERE id = ?", parsedData.id)
+    let price = params[0].price_coeffiecient * 
+    cppModule.queryPrice(ds_name[0].name, tb_names, parsedData.query, [0.5, params[0].sensitivity_degree, 
+        ds_name[0].price], params[0].strategy)
+    let complement = 0
     if (parsedData.complement)
+    {
         price += 100
+        complement = 1
+    }
+    await pool.query("UPDATE goods SET need_complement = ?", complement)
     let [dummy, _2] = await pool.query("INSERT IGNORE INTO shopping_cart (number, query, date, dataset_id,\
         price) VALUES(1, ?, NOW(), ?, ?)", [parsedData.query, parsedData.id, price])
     ctx.body = {
@@ -65,13 +74,5 @@ detail.get('/list', async (ctx) => {
     }
 
 })
-
-function UP(query) {
-    
-}
-
-function UCP() {
-
-}
 
 export default detail

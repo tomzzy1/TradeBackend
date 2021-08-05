@@ -3,9 +3,12 @@ import loadCSVIntoDataset from '../utils/loadCSV.js'
 
 //await pool.query("INSERT IGNORE INTO goods VALUES(100, 'NBA', '2000-01-02', 5000)")
 //await pool.query("INSERT IGNORE INTO goods_detail VALUES(100, 'NBA data', 'USA', 1)")
-
-await pool.query("TRUNCATE orders")
-await pool.query("TRUNCATE order_contents")
+let [res, _] = await pool.query("SELECT * FROM question_info")
+console.log(res)
+//let [res, _] = await pool.query("INSERT INTO question_info (id, pos, row_info, col_info) VALUES(1, 'FG_PCT_home', 'GAME_DATE_EST: 2021-05-26, GAME_ID: 42000102, GAME_STATUS_TEXT: Final, HOME_TEAM_ID: 1610612755, VISITOR_TEAM_ID: 1610612764, SEASON: 2020, TEAM_ID_home: 1610612755, PTS_home: 120, FG_PCT_home: undefined, FT_PCT_home: 0.684, FG3_PCT_home: 0.429, AST_home: undefined, REB_home: 45, TEAM_ID_away: 1610612764, PTS_away: 95, FG_PCT_away: 0.402, FT_PCT_away: 0.633, FG3_PCT_away: 0.091, AST_away: 22, REB_away: 40, HOME_TEAM_WINS: undefined', 'FG_PCT_home: undefined, FG_PCT_home: undefined')")
+//console.log(res)
+//await pool.query("TRUNCATE orders")
+//await pool.query("TRUNCATE order_contents")
 //await pool.query("TRUNCATE shopping_cart")
 //let [result, _] = await pool.query('INSERT INTO test_table (date) VALUES(NOW())')
 //console.log(result)

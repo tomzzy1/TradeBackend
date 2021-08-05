@@ -12,6 +12,7 @@
 #include <iostream>
 #include <algorithm>
 #include "sqlParser.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -98,26 +99,7 @@ public:
 		}
 	}
 
-	vector<string> split(const string& s, const string& delim)                    //split分割函数
-	{
-		vector<string> elems;
-		size_t pos = 0;
-		size_t len = s.length();
-		size_t delim_len = delim.length();
-		if (delim_len == 0) return elems;
-		while (pos < len)
-		{
-			int find_pos = (int)s.find(delim, pos);
-			if (find_pos < 0)
-			{
-				elems.push_back(s.substr(pos, len - pos));
-				break;
-			}
-			elems.push_back(s.substr(pos, find_pos - pos));
-			pos = find_pos + delim_len;
-		}
-		return elems;
-	}
+
 	void output_result(string s)                     //作用：将输出的字符串信息写入到output.txt中
 	{
 		output << s << endl;
@@ -366,162 +348,6 @@ public:
 		std::cout << "Have read the query.." << endl;
 	}
 
-
-	/*void readin_history_query(string queryPath) {
-		ifstream queryin(queryPath);
-		if (!queryin) {
-			exit(0);
-		}
-		std::cout << "The number of queries for history-aware pricing: " << g_queryNumber << endl;
-
-		//output_result("Query Information: ");
-		//int type = -1;
-		queryin >> datatype; // dataset name
-		output_result(datatype);
-		std::cout << datatype << endl;
-		HQ.resize(g_queryNumber);
-		for (int r = 0; r < g_queryNumber; r++)
-		{
-			std::cout << "Query --" << r << "-- is as follows. " << endl;
-
-			queryin >> type; //S=0, P =1, J =2, SPJ =3;
-			HQ[r].queryType = type;
-			HQ[r].joinNumber = 0;
-			if (type == 2)
-			{
-				std::cout << "This is a Join query: " << endl;
-				queryin >> HQ[r].joinNumber; //第一行是join表的个数
-				string joinNumber;
-				getline(queryin, joinNumber);
-				if (HQ[r].joinNumber != 0)
-				{
-					output_result("Number of Tables in Join: ");
-					char c[8];
-					output_result(_itoa(HQ[r].joinNumber, c, 10));
-					std::cout << "Number of Tables in Join: " << HQ[r].joinNumber << endl;
-				}
-				for (int i = 0; i < HQ[r].joinNumber; i++) {
-					int t;
-					queryin >> t;        //第二行是join时各个表的编号
-					HQ[r].joinIndex.push_back(t);
-					output_result("Table Index in Join:");
-					char c1[8];
-					output_result(_itoa(t, c1, 10));
-					std::cout << "Table's Index in Join: " << t << endl;
-				}
-
-				for (int i = 1; i < HQ[r].joinNumber; i++) {
-					string attr;
-					queryin >> attr;
-					output_result("Foreign Keys:");
-					HQ[r].joinAttr.push_back(attr);//第三行是join时各个表的属性名
-					output_result(attr);
-				}
-				queryin >> HQ[r].selectNumber;//select的条件数
-				output_result("#Constraints in Selection:");
-				char c3[8];
-				output_result(_itoa(HQ[r].selectNumber, c3, 10));
-				std::cout << "#Constraints in Selection: " << HQ[r].selectNumber << endl;
-				if (HQ[r].selectNumber != 0)
-				{
-					for (int i = 0; i < HQ[r].selectNumber; i++) {
-						string attr;
-						queryin >> attr;
-						HQ[r].selectAttr.push_back(attr);// select的属性名
-						output_result("Critical attributes in Selection:");
-						output_result(attr);
-					}
-					for (int i = 0; i < HQ[r].selectNumber; i++) {
-						string attr;
-						//getline(queryin, attr);
-						queryin >> attr;         // select时各属性名对应的值
-						HQ[r].selecctValue.push_back(attr);
-						output_result("Values on critical attributes in Selection:");
-						output_result(attr);
-					}
-					for (int i = 0; i < HQ[r].selectNumber; i++) {
-						int t;
-						queryin >> t;
-						HQ[r].selectOperation.push_back(t);
-						output_result("Select operation: ");
-						char c1[8];
-						output_result(_itoa(t, c1, 10));
-						std::cout << "Select operation: " << t << endl;
-					}
-
-				}
-
-			}
-			else if (type == 0)
-			{
-				std::cout << "This is a Selection query: " << endl;
-				queryin >> HQ[r].selectP; // select的表编号
-				output_result("Table Index in Selection:");
-				char c2[8];
-				output_result(_itoa(HQ[r].selectP, c2, 10));
-				std::cout << "Table's Index in Selection: " << HQ[r].selectP << endl;
-
-
-
-				queryin >> HQ[r].selectNumber;//select的条件数
-				output_result("#Constraints in Selection:");
-				char c3[8];
-				output_result(_itoa(HQ[r].selectNumber, c3, 10));
-				std::cout << "#Constraints in Selection: " << Q.selectNumber << endl;
-				for (int i = 0; i < HQ[r].selectNumber; i++) {
-					string attr;
-					queryin >> attr;
-					HQ[r].selectAttr.push_back(attr);// select的属性名
-					output_result("Critical attributes in Selection:");
-					output_result(attr);
-				}
-				for (int i = 0; i < HQ[r].selectNumber; i++) {
-					string attr;
-					queryin >> attr;         // select时各属性名对应的值
-					HQ[r].selecctValue.push_back(attr);
-					output_result("Values on critical attributes in Selection:");
-					output_result(attr);
-				}
-				for (int i = 0; i < HQ[r].selectNumber; i++) {
-					int t;
-					queryin >> t;
-					HQ[r].selectOperation.push_back(t);
-					output_result("Select operation: ");
-					char c1[8];
-					output_result(_itoa(t, c1, 10));
-					std::cout << "Select operation: " << t << endl;
-				}
-			}
-			else if (type == 1)
-			{
-				std::cout << "This is a Projection query: " << endl;
-				queryin >> HQ[r].projectionP;   //第七行是投影的表编号
-				output_result("Table index in Projection:");
-				char c4[8];
-				output_result(_itoa(HQ[r].projectionP, c4, 10));
-				queryin >> HQ[r].projectionNumber;//投影的维度数
-				output_result("#Critical attributes in Projection:");
-				char c5[8];
-				output_result(_itoa(HQ[r].projectionNumber, c5, 10));
-				std::cout << "Table index in Projection:" << HQ[r].projectionP << endl;
-				std::cout << "#Critical attributes  in Projection:" << HQ[r].projectionNumber << endl;
-
-
-				for (int i = 0; i < HQ[r].projectionNumber; i++) {
-					string attr;
-					queryin >> attr;    //第八行是投影的属性名
-					HQ[r].projectionAttr.push_back(attr);
-					output_result("Critical attributes in Projection:");
-					output_result(attr);
-				}
-
-			}
-		}
-		output_result("***************************************");
-		queryin.close();
-		std::cout << "Have read all the queries.." << endl;
-	}*/
-
 	void readin_history_query() {
 		/*ifstream queryin(queryPath);
 		if (!queryin) {
@@ -717,21 +543,6 @@ public:
 		return ret_vec;
 	}
 
-	vector<string> explode(const string& s, char c)                      //作用：分割函数，便于将.tbl文件中的数据按照“|”分割开来，写入到tuple中
-	{
-		string buff{ "" };
-		vector<string> v;
-
-		for (auto n : s)
-		{
-			if (n != c) buff += n;
-			else if (n == c && buff != "") { v.push_back(buff); buff = ""; }
-		}
-		if (buff != "") v.push_back(buff);
-
-		return v;
-	}
-
 	/*void init_price()                            //作用：初始化各个元组的价格，便于历史价格的更新；第一个for循环的10代表有10个表
 	{
 
@@ -763,8 +574,8 @@ public:
 		table.tuple.clear();
 		table.tuple.resize(rowNumber[x]);
 		ifstream inputFile(paths[x]); // 读入文件
-		ifstream labelFile(default_path + std::to_string(x) + std::string(".l")); // 读入文件
-		ifstream missingFile(default_path + std::to_string(x) + std::string(".m")); // 读入文件
+		ifstream labelFile(default_path + datatype + '_' + std::to_string(x) + std::string(".l")); // 读入文件
+		ifstream missingFile(default_path + datatype + '_' + std::to_string(x) + std::string(".m")); // 读入文件
 		if (!inputFile)
 			cout << "open input file failed!\n";
 		if (!labelFile)
@@ -872,7 +683,7 @@ public:
 		return true;
 	}
 
-	void join(View& T1, View& T2, int pos1, int pos2) {                 //作用：表的连接操作，更新结果表的同时也要更新DA中的属性
+	void join(View& T1, View& T2, int pos1, int pos2, int strategy) {                 //作用：表的连接操作，更新结果表的同时也要更新DA中的属性
 		T.tupleNumber = 0;
 		//g_quality = 0;
 		//g_qualityNumber = 0;
@@ -886,8 +697,12 @@ public:
 					T1.tuple[i].x++;//the number of missing critical attributes
 					//std::cout << "mstate is zero. " << endl;
 					predicate(T1, i);
-					g_quality += pow(g_a, T1.tuple[i].x);
-					g_qualityNumber++;
+					if (strategy == 0)
+					{
+						g_quality += pow(g_a, T1.tuple[i].x);
+						g_qualityNumber++;
+					}
+					
 					continue;
 				}
 
@@ -898,8 +713,11 @@ public:
 							if (T2.tuple[j].x == 0)
 							{
 								T2.tuple[j].x++;
-								g_quality += pow(g_a, T2.tuple[j].x);
-								g_qualityNumber++;
+								if (strategy == 0)
+								{
+									g_quality += pow(g_a, T2.tuple[j].x);
+									g_qualityNumber++;
+								}
 							}
 							continue;
 						}
@@ -933,8 +751,12 @@ public:
 				else {
 					if (T1.tuple[i].x > 0)
 					{
-						g_quality += pow(g_a, T1.tuple[i].x);
-						g_qualityNumber++;
+						if (strategy == 0)
+						{
+							g_quality += pow(g_a, T1.tuple[i].x);
+							g_qualityNumber++;
+						}
+						
 					}
 				}//end of if predicate
 
@@ -948,8 +770,12 @@ public:
 					T1.tuple[i].x++;//the number of missing critical attributes
 					//std::cout << "mstate is zero. " << endl;
 					//predicate(T1, i);
-					g_quality += pow(g_a, T1.tuple[i].x);
-					g_qualityNumber++;
+					if (strategy == 0)
+					{
+						g_quality += pow(g_a, T1.tuple[i].x);
+						g_qualityNumber++;
+					}
+					
 					continue;
 				}
 				else {
@@ -959,8 +785,11 @@ public:
 							if (T2.tuple[j].x == 0)
 							{
 								T2.tuple[j].x++;
-								g_quality += pow(g_a, T2.tuple[j].x);
-								g_qualityNumber++;
+								if (strategy == 0)
+								{
+									g_quality += pow(g_a, T2.tuple[j].x);
+									g_qualityNumber++;
+								}
 							}
 							continue;
 						}
@@ -1013,7 +842,7 @@ public:
 	}
 
 
-	void select_eager() {
+	void select_eager(int strategy) {
 		View newT;
 		newT.tupleNumber = 0;
 		std::cout << "Q.joinNum == " << Q.joinNumber << endl;
@@ -1037,8 +866,12 @@ public:
 			}
 			else if (T.tuple[i].x > 0)
 			{
-				g_quality += pow(g_a, T.tuple[i].x);
-				g_qualityNumber++;
+				if (strategy == 0)
+				{
+					g_quality += pow(g_a, T.tuple[i].x);
+					g_qualityNumber++;
+				}
+				
 			}
 		}
 		T = newT;
@@ -1047,7 +880,7 @@ public:
 
 	//vector<int> projectionIndex;
 
-	void projection_eager() {
+	void projection_eager(int strategy) {
 		View newT;
 		newT.tupleNumber = 0;
 		unordered_map<string, int> hash;
@@ -1072,8 +905,12 @@ public:
 			}
 			if (T.tuple[i].x > 0)
 			{
-				g_quality += pow(g_a, T.tuple[i].x);
-				g_qualityNumber++;
+				if (strategy == 0)
+				{
+					g_quality += pow(g_a, T.tuple[i].x);
+					g_qualityNumber++;
+				}
+				
 			}
 			if (hash.find(s) == hash.end()) {// does not exist in hash
 				Tuple t;
@@ -1251,8 +1088,9 @@ public:
 
 
 
-	void load(const std::vector<std::string>& v)
+	void load(std::string ds_name, const std::vector<std::string>& v)
 	{
+		datatype = ds_name;
 		names = v;
 		for (auto& n : v)
 		{
@@ -1398,7 +1236,7 @@ public:
 	Q.joinIndex
 	}*/
 
-	void EagerStrategy()
+	void EagerStrategy(int strategy)
 	{
 		//*************eager-approach************    
 		//clock_t eagerstart = clock();
@@ -1447,16 +1285,20 @@ public:
 					T2.tuple.clear();
 					T2.tupleNumber = 0;
 					readin_helper(x, T2);
-					join(T1, T2, pos1, pos2); //将当前结果与另一个表join然后更新结果
+					join(T1, T2, pos1, pos2, strategy); //将当前结果与另一个表join然后更新结果
 					//T1.tuple.clear;
 					//T2.tuple.clear;
 				}
 				// compute quality of join;
-				if (g_quality != 0)
+				if (strategy == 0)
 				{
-					g_quality = (g_quality + T.tupleNumber) / (g_qualityNumber + T.tupleNumber);
+					if (g_quality != 0)
+					{
+						g_quality = (g_quality + T.tupleNumber) / (g_qualityNumber + T.tupleNumber);
+					}
+					else g_quality = 1;
 				}
-				else g_quality = 1;
+				
 				std::cout << "join ending!" << endl;
 			}
 		}
@@ -1470,13 +1312,17 @@ public:
 				readin_helper(Q.selectP, T);
 				table[Q.selectP] = 0;
 			}
-			select_eager();
+			select_eager(strategy);
 			// compute quality of join;
-			if (g_quality != 0)
+			if (strategy == 0)
 			{
-				g_quality = (g_quality + T.tupleNumber) / (g_qualityNumber + T.tupleNumber);
+				if (g_quality != 0)
+				{
+					g_quality = (g_quality + T.tupleNumber) / (g_qualityNumber + T.tupleNumber);
+				}
+				else g_quality = 1;
 			}
-			else g_quality = 1;
+			
 			output_result("select ending!");
 			//}
 		}
@@ -1490,13 +1336,17 @@ public:
 					readin_helper(Q.projectionP, T);
 					table[Q.projectionP] = 0;
 				}
-				projection_eager();
+				projection_eager(strategy);
 				// compute quality of join;
-				if (g_quality != 0)
+				if (strategy == 0)
 				{
-					g_quality = (g_quality + T.tupleNumber) / (g_qualityNumber + T.tupleNumber);
+					if (g_quality != 0)
+					{
+						g_quality = (g_quality + T.tupleNumber) / (g_qualityNumber + T.tupleNumber);
+					}
+					else g_quality = 1;
 				}
-				else g_quality = 1;
+				
 				output_result("projecting ending!");
 			}
 		}
@@ -1505,30 +1355,37 @@ public:
 		}
 	}
 
-	float PriceComputation(const vector<Tuple>& m)
+	float PriceComputation(const vector<Tuple>& m, int strategy)
 	{
 		float price = 0;
 		//int d;//the table ID 
 		for (int i = 0; i < m.size(); i++)
 		{
-			int completeNum = 0;
-			// TODO: 这里的price怎么计算的？怎么从M来获取各自对应的信息？
-			for (int j = 0; j < m[i].mState.size(); j++)
+			if (strategy == 2)
 			{
-				if (m[i].mState[j] == 1)
+				price += g_b0;
+			}
+			else
+			{
+				int completeNum = 0;
+				// TODO: 这里的price怎么计算的？怎么从M来获取各自对应的信息？
+				for (int j = 0; j < m[i].mState.size(); j++)
 				{
-					completeNum++;
+					if (m[i].mState[j] == 1)
+					{
+						completeNum++;
+					}
+
 				}
 
-			}
-
-			if (completeNum > m[i].Values.size())
-			{
-				//std::cout << "completeNum  " << completeNum << " > attributeNum  " << m[i].Values.size() << endl;
-				break;
-			}
-			price += g_b0 * ((double)completeNum / m[i].Values.size());
+				if (completeNum > m[i].Values.size())
+				{
+					//std::cout << "completeNum  " << completeNum << " > attributeNum  " << m[i].Values.size() << endl;
+					break;
+				}
+				price += g_b0 * ((double)completeNum / m[i].Values.size());
 			//price = price + base-price of M[i] * (alpha * M[i]'s complete rate + (1-alpha) * M[i]'s quality) 
+			}
 		}
 		return price;
 	}
@@ -1817,7 +1674,7 @@ public:
 		float price = -1;
 		for (int i = 0; i < M.size(); i++)
 		{
-			float p = PriceComputation(M[i]);
+			float p = PriceComputation(M[i], 0);
 			if (price == -1 || p < price) {
 				price = p;
 				m = M[i];
@@ -1863,7 +1720,7 @@ public:
 
 
 	//function for Algorithm2: Approx with Eager strategy (Approx-E)
-	void Approx(float Phi)
+	void Approx(float Phi, int strategy)
 	{
 		//Results result;
 		//result.ResTuples = T;
@@ -1901,7 +1758,7 @@ public:
 				vector<Tuple> lset;
 				for (int j = 0; j < T.tuple[i].L.size(); j++)// T.L[i] is the collection of the lineage set of the i-th result tuple
 				{
-					float p = PriceComputation(T.tuple[i].L[j]);
+					float p = PriceComputation(T.tuple[i].L[j], strategy);
 					if (price == -1 || p < price) {
 						price = p;
 						lset = T.tuple[i].L[j];
@@ -1917,7 +1774,7 @@ public:
 			}
 
 			//result.Mlineage = m;  
-			base_price = PriceComputation(m);
+			base_price = PriceComputation(m, strategy);
 		}
 		//result.price = base_price *Phi; //phi is the complete rate of the related table to query
 		clock_t endtime = clock();
@@ -2084,7 +1941,7 @@ public:
 		}
 
 		//result.Mlineage = m;
-		float base_price = PriceComputation(m);
+		float base_price = PriceComputation(m, 0);
 		//result.price = result.base_price*Phi;//phi is the complete rate of the related table to query
 		clock_t endtime = clock();
 
@@ -2123,7 +1980,7 @@ public:
 		Results result;
 
 		clock_t starttime = clock();
-		EagerStrategy();// it only get the lineage set for each result tuple
+		EagerStrategy(0);// it only get the lineage set for each result tuple
 		result.ResTuples = T;
 		result.ResAttrs = A;
 		// then get every possible lineage set of the query via the union operation
@@ -2389,12 +2246,17 @@ public:
 
 
 	void generate_miss_rate_file(int tuple_num, int dim, double miss_rate, string&& file_name) {
+		std::cout << "generating...\n";
 		ofstream file(file_name, ios::trunc);
 
 		srand(time(0));
-
+		
 		if (!file)
+		{
+			std::cout << "fail to open file!\n";
 			exit(0);
+		}
+			
 
 		int t0 = tuple_num % 1000; //need to change
 		int t1 = tuple_num / 1000;//need to change
@@ -2426,7 +2288,8 @@ public:
 			for (int i = 0; i < tuple_num; i++) {
 				for (int j = 0; j < dim; j++) {
 					file << (tuple[i][j] == 0 ? "0" : "1");
-					file << " ";
+					if (j != dim - 1)
+						file << " ";
 				}
 				file << endl;
 				if (i % 100 == 0)
@@ -2463,7 +2326,8 @@ public:
 		for (int i = 0; i < tuple_num; i++) {
 			for (int j = 0; j < dim; j++) {
 				file << (tuple[i][j] == 0 ? "0" : "1");
-				file << " ";
+				if (j != dim - 1)
+					file << " ";
 			}
 			file << endl;
 			if (i % 100 == 0)
@@ -2478,7 +2342,8 @@ public:
 	void generate_label_file(int tuple_num, int version, float update_rate, string&& file_name) {
 
 		//initial the first label file
-		vector<int>state;
+		std::cout << "generating...\n";
+		vector<int> state;
 		state.clear();
 		ofstream file(file_name, ios::trunc);
 		if (!file)
@@ -2516,7 +2381,21 @@ public:
 
 	float phi;
 
-	int query(const std::string& sqlQuery, std::vector<float> params)
+	void generate(const std::string& ds_name, std::vector<std::string>& names, float miss_rate)
+	{
+		load(ds_name, names);
+		init();
+		for (int i = 0; i < paths.size(); ++i)
+		{
+			generate_label_file(rowNumber[i], 1, 1, default_path + datatype + '_' + std::to_string(i) + std::string(".l"));
+			std::cout << "label file generated\n";
+			generate_miss_rate_file(rowNumber[i], dim[i], miss_rate
+				, default_path + datatype + '_' + std::to_string(i) + std::string(".m"));
+			std::cout << "one file generated\n";
+		}
+	}
+
+	int query(const std::string& sqlQuery, std::vector<float> params, int strategy)
 	{
 		//parser.parse("SELECT * FROM games g, games_details gd WHERE g.GAME_ID = gd.GAME_ID");
 		//parser.parse("SELECT * FROM teams t, players p WHERE t.TEAM_ID = p.TEAM_ID");
@@ -2761,7 +2640,7 @@ public:
 				std::cout << "---------------------------------------------------------------" << endl;
 				std::cout << "Processing Eager Strategy..." << endl;
 				clock_t starttime = clock();
-				EagerStrategy();// it only gets the lineage set for each result tuple
+				EagerStrategy(strategy);// it only gets the lineage set for each result tuple
 				clock_t endtime = clock();
 				output_result("Time used for Eager Strategy: ");
 				output_number(endtime - starttime);
@@ -2783,7 +2662,7 @@ public:
 				std::cout << "Starting the approximate algorithm.." << endl;
 				//HistoryApprox(phi);
 				history_price += g_price;
-				Approx(phi);
+				Approx(phi, strategy);
 				std::cout << "**********************************************************" << endl;
 				std::cout << "The current history-oblivious price is: " << no_history_price << endl;
 				std::cout << "The current history-aware price  is: " << history_price << endl;
@@ -2810,101 +2689,15 @@ public:
 			std::cout << "The final size of token is: " << token.size() << endl;
 			output_result("The final size of token is: ");
 			output_number(token.size());
-		}
-
-
-		// -------------------------------history-oblivious pricing problem----------------------------------------------
-
-		if (false)// using Eager
-		{
-			std::cout << "---------------------------------------------------------------" << endl;
-			std::cout << "Processing Eager Strategy..." << endl;
-			clock_t starttime = clock();
-			EagerStrategy();// it only gets the lineage set for each result tuple
-			clock_t endtime = clock();
-			output_result("Time used for Eager Strategy: ");
-			output_number(endtime - starttime);
-			std::cout << "Time used for Eager: " << endtime - starttime << endl;
-			output_result("Result set size: ");
-			output_number(T.tupleNumber);
-			std::cout << "Result set size:  " << T.tupleNumber << endl;
-			int sizeofm = 1;
-			for (int i = 0; i < T.tupleNumber; i++)
+			if (strategy == 0)
 			{
-				sizeofm *= T.tuple[i].L.size();
+				return g_quality * no_history_price * g_alpha;
 			}
-			output_result("The max number of query lineage set: ");
-			output_number(sizeofm);
-			std::cout << "The max number of query lineage set: " << sizeofm << endl;
-			//algorithms using eager...
-
-			std::cout << "---------------------------------------------------------------" << endl;
-			std::cout << "Starting the approximate algorithm.." << endl;
-			Approx(phi);
-
-			std::cout << "Starting the progressive approximate algorithm.." << endl;
-			ProgressiveApprox(phi);
-
-			/*
-			// parameters are reset.
-			std::cout << "---------------------------------------------------------------" << endl;
-			std::cout << "Processing Lazy Strategy..." << endl;
-			starttime = clock();
-			LazyStrategy();// T is the result tuples of the query.
-			endtime = clock();
-			output_result("Time used for Lazy Strategy: ");
-			output_number(endtime - starttime);
-			std::cout << "Time used for Lazy: " << endtime - starttime << endl;
-			std::cout << "Starting Exact algorithm.." << endl;
-			Exact(phi);
-
-			*/
-
-
-
-
-
-
-
-		}
-
-		if (false) // using Lazy
-		{
-
-
-
-			//output_result("Result set size: ");
-			//output_number(T.tupleNumber);
-			int sizeofm = 1;
-			for (int i = 0; i < T.tupleNumber; i++)
+			else
 			{
-				sizeofm *= T.tuple[i].L.size();
+				return no_history_price;
 			}
-			output_result("The max number of query lineage set: ");
-			output_number(sizeofm);
-			std::cout << "The max number of query lineage set: " << sizeofm << endl;
-
-
-
-
-
-
-			//std::cout << "Staring Exact algorithm.." << endl;
-			//Exact(phi);
-
-			// algorithms using Lazy...
-
-
-
-
-
-
 		}
-
-
-
-
-
 		/* for the following algorithms, we assume that
 		(i) there are a series of queries(e.g., S queries) required to perform from a consumer,
 		(ii) and some tuples in these tables have been probably updated for each query.

@@ -1,12 +1,16 @@
 #include "napi.h"
 #include "queryPrice.h"
+#include "question.h"
+#include <list>
+#include "mysqlx/xdevapi.h"
+#include "mysqlx/common/value.h"
 
 using namespace Napi;
 
 Number queryPrice(const CallbackInfo& args)
 {
 	QueryPrice qp;
-	Array arr = args[0].As<Array>();
+	Array arr = args[1].As<Array>();
 	std::vector<std::string> paths;
 
 	for (int i = 0; i < arr.Length(); ++i)
@@ -15,18 +19,18 @@ Number queryPrice(const CallbackInfo& args)
 		paths.push_back(val);
 	}
 
-	Array arr2 = args[2].As<Array>();
+	Array arr2 = args[3].As<Array>();
 	std::vector<float> params;
 	for (int i = 0; i < arr2.Length(); ++i)
 	{
 		params.push_back(arr2.Get(i).As<Number>().FloatValue());
 	}
 
-	qp.load(paths);
+	qp.load(args[0].As<String>(), paths);
 	float price = -1;
 	try
 	{
-		price = qp.query(args[1].ToString(), params);
+		price = qp.query(args[2].ToString(), params, args[4].As<Number>());
 	}
 	catch(const std::exception& e)
 	{
@@ -54,11 +58,75 @@ Boolean checkSQL(const CallbackInfo& args)
 	
 }
 
+void getQuestionInfo(const CallbackInfo& args)
+{
+	Array arr = args[1].As<Array>();
+	std::vector<std::string> names;
+
+	for (int i = 0; i < arr.Length(); ++i)
+	{
+		std::string val = arr.Get(i).ToString();
+		names.push_back(val);
+	}
+	std::string ds_name = args[0].As<String>();
+	auto result = questionInfo(ds_name, names);
+	using mysqlx::SessionOption;
+	try
+	{
+	mysqlx::Session sess(SessionOption::USER, "root",
+                     SessionOption::PWD, "123456",
+                     SessionOption::HOST, "localhost",
+                     SessionOption::PORT, 33060,
+                     SessionOption::DB, "user_schema");
+	std::list<mysqlx::Schema> l = sess.getSchemas();
+	for (auto s: l)
+	{
+		std::cout << s.getName() << '\n';
+	}
+	sess.sql("USE user_schema").execute();
+	std::cout << "session setup\n";
+	std::cout << "result size " << result[0].size() << '\n';
+ 	auto ids = sess.sql("SELECT id FROM goods WHERE name = '" + ds_name + "'").execute();
+	std::cout << "selected\n";
+	auto row = ids.fetchOne();
+	auto id = static_cast<int>(row[0]);
+	std::cout << "id " << id << '\n';
+	for (int i = 0; i < result[0].size() && i < 1000; ++i)
+	{
+		std::string sql = "INSERT IGNORE INTO question_info (id, pos, row_info, col_info, dataset_id) VALUES(" 
+		+ std::to_string(i + 1) + ", '" + result[0][i] 
+		+ "', '"  + result[1][i]
+		+ "', '" + result[2][i] + "', '" + std::to_string(id) + "')";
+		//std::cout << i << '\n';
+		sess.sql(sql).execute();
+	}
+	std::cout << "insert finished\n";
+	} catch (const std::exception& e){
+		std::cout << e.what();
+	}
+}
+
+void generate(const CallbackInfo& args)
+{
+	Array arr = args[1].As<Array>();
+	std::vector<std::string> names;
+
+	for (int i = 0; i < arr.Length(); ++i)
+	{
+		std::string val = arr.Get(i).ToString();
+		names.push_back(val);
+	}
+	QueryPrice qp;
+	qp.generate(args[0].As<String>(), names, args[2].As<Number>());
+}
+
 Object Init(Env env, Object exports)
 {
 	exports.Set(String::New(env, "queryPrice"), Function::New(env, queryPrice));
 	exports.Set(String::New(env, "checkSQL"), Function::New(env, checkSQL));
+	exports.Set(String::New(env, "getQuestionInfo"), Function::New(env, getQuestionInfo));
+	exports.Set(String::New(env, "generate"), Function::New(env, generate));
 	return exports;
 }
 
-NODE_API_MODULE(queryPricer, Init)
+NODE_API_MODULE(cppModule, Init)

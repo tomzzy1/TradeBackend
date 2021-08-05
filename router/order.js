@@ -52,7 +52,18 @@ order.get('/list', async (ctx) => {
     //let parsedData = JSON.parse(postData)
     let [oc, _0] = await pool.query("SELECT id FROM orders")
     let id = oc.length
+    let [datasets, _1] = await pool.query("SELECT dataset_id FROM order_contents WHERE order_id = ?", id)
+    for (let ds of datasets)
+    {
+        let [result, _2] = await pool.query("SELECT need_complement FROM goods WHERE id = ?", ds.dataset_id)
+        if (result[0].need_complement == 1)
+        {
+            await pool.query("UPDATE goods SET need_complement = 2 WHERE id = ?", ds.dataset_id)
+        }
+    }
+    
     await pool.query("UPDATE orders SET state = 2 WHERE id = ?", id)
+    console.log("complete!")
     ctx.body = {
         code: 20000
     }

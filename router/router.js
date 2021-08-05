@@ -6,7 +6,8 @@ import gallery from './gallery.js'
 import crowdsourcing from './crowdsourcing.js'
 import recvFile from './receiveFile.js'
 import detail from './detail.js'
-
+import post from './post_question.js'
+import setting from './setting.js'
 
 let router = new Router(
 {
@@ -20,5 +21,7 @@ router.use(gallery.routes(), gallery.allowedMethods())
 router.use(crowdsourcing.routes(), crowdsourcing.allowedMethods())
 router.use(recvFile.routes(), recvFile.allowedMethods())
 router.use(detail.routes(), detail.allowedMethods())
+router.use(post.routes(), post.allowedMethods())
+router.use(setting.routes(), setting.allowedMethods())
 
 export default router

@@ -17,6 +17,10 @@ gallery.get('/list', async (ctx) => {
     
     // console.log("=====Connect Successfully!=====")
     let [dss, _] = await pool.query("SELECT g.id, d.description, g.date, g.name, d.source, d.size FROM goods g JOIN goods_detail d ON g.id=d.id")
+    if (params.searching_content !== undefined)
+    {
+        dss = dss.filter((value) => value[params.search] == params.searching_content)
+    }
     let length = dss.length 
     dss = dss.filter((value, index) => index < limit * pagenum && index >= limit * (pagenum - 1))
     console.log("=====processing query!=====")
