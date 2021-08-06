@@ -46,7 +46,7 @@ setting.get('/list', async (ctx) => {
         let begin = performance.now()
         let price = //params[0].price_coefficient * 
             cppModule.queryPrice(ds_name[0].name, tb_names, query, [Number(params[0].price_coefficient), Number(params[0].sensitivity_degree), 
-            ds_name[0].price], i)
+            Number(ds_name[0].price)], i)
         let end = performance.now()
         methods.push({name: name[i], time: end - begin, price, param1: params[0].price_coefficient, param2: params[0].sensitivity_degree})
         console.log(methods)

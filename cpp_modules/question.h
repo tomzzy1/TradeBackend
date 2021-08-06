@@ -19,26 +19,26 @@ string join(const vector<string>& strs, string delim)
 	return str;
 }
 
-auto questionInfo(string ds_name, vector<string>& names) 
+auto questionInfo(string ds_name, vector<string>& names, int index) 
 {
 	string line_buf;
 	string default_path = "C:\\Users\\tom zh\\source\\repos\\backend\\query\\";
 	vector<string> row_info;
 	vector<string> col_info;
 	vector<string> pos;
-    int idx = 0;
+    //int idx = 0;
 	for (auto& n: names)
 	{
         std::cout << "start\n";
         vector<vector<string>> table;
 	    vector<vector<int>> m_state;
 		ifstream table_file(default_path + "archive\\" + n + ".csv");
-		ifstream missing_file(default_path + ds_name + '_' + std::to_string(idx) + std::string(".m"));
+		ifstream missing_file(default_path + ds_name + '_' + std::to_string(index) + std::string(".m"));
         if (!table_file)
             std::cout << "fail to open table file\n";
         if (!table_file)
             std::cout << "fail to open missing file\n";
-        ++idx;
+        //++idx;
 		getline(table_file, line_buf);
 		auto attrs = split(line_buf, string(",", 1));
         std::cout << "attrs size " << attrs.size() << '\n';

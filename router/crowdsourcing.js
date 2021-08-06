@@ -33,7 +33,7 @@ crowdsourcing.get('/list', async (ctx) => {
 
 }).get('/answer_list', async (ctx) => {
     console.log(ctx.query)
-    let [goods, _] = await pool.query("SELECT id, question, answers, correctAnswer, point FROM question \
+    let [goods, _] = await pool.query("SELECT id, question, description, answers, correctAnswer, point FROM question \
     WHERE dataset_id = ?", ctx.query.id)
     //console.log(goods)
     ctx.body = {

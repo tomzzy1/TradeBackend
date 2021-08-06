@@ -2294,7 +2294,7 @@ public:
 				file << endl;
 				if (i % 100 == 0)
 				{
-					std::cout << i << endl;
+					//std::cout << i << endl;
 				}
 			}
 		}
@@ -2332,7 +2332,7 @@ public:
 			file << endl;
 			if (i % 100 == 0)
 			{
-				std::cout << i << endl;
+				//std::cout << i << endl;
 			}
 		}
 
@@ -2381,7 +2381,7 @@ public:
 
 	float phi;
 
-	void generate(const std::string& ds_name, std::vector<std::string>& names, float miss_rate)
+	void generateAll(const std::string& ds_name, std::vector<std::string>& names, float miss_rate)
 	{
 		load(ds_name, names);
 		init();
@@ -2391,6 +2391,20 @@ public:
 			std::cout << "label file generated\n";
 			generate_miss_rate_file(rowNumber[i], dim[i], miss_rate
 				, default_path + datatype + '_' + std::to_string(i) + std::string(".m"));
+			std::cout << "one file generated\n";
+		}
+	}
+
+	void generate(const std::string& ds_name, std::vector<std::string>& names, float miss_rate, int index)
+	{
+		load(ds_name, names);
+		init();
+		for (int i = 0; i < paths.size(); ++i)
+		{
+			generate_label_file(rowNumber[i], 1, 1, default_path + datatype + '_' + std::to_string(index) + std::string(".l"));
+			//std::cout << "label file generated\n";
+			generate_miss_rate_file(rowNumber[i], dim[i], miss_rate
+				, default_path + datatype + '_' + std::to_string(index) + std::string(".m"));
 			std::cout << "one file generated\n";
 		}
 	}

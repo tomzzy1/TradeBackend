@@ -30,7 +30,7 @@ post.get('/list', async (ctx) => {
         }
     }
 }).get('/info', async (ctx) => {
-    let [info, _] = await pool.query("SELECT * FROM question_info WHERE id <= 2 AND dataset_id = " + ctx.query.id)
+    let [info, _] = await pool.query("SELECT * FROM question_info WHERE id <= 10 AND dataset_id = ?", ctx.query.id)
     ctx.body = {
         code: 20000,
         data:

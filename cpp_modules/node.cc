@@ -69,7 +69,8 @@ void getQuestionInfo(const CallbackInfo& args)
 		names.push_back(val);
 	}
 	std::string ds_name = args[0].As<String>();
-	auto result = questionInfo(ds_name, names);
+	int index = args[2].As<Number>();
+	auto result = questionInfo(ds_name, names, index);
 	using mysqlx::SessionOption;
 	try
 	{
@@ -78,11 +79,6 @@ void getQuestionInfo(const CallbackInfo& args)
                      SessionOption::HOST, "localhost",
                      SessionOption::PORT, 33060,
                      SessionOption::DB, "user_schema");
-	std::list<mysqlx::Schema> l = sess.getSchemas();
-	for (auto s: l)
-	{
-		std::cout << s.getName() << '\n';
-	}
 	sess.sql("USE user_schema").execute();
 	std::cout << "session setup\n";
 	std::cout << "result size " << result[0].size() << '\n';
@@ -91,18 +87,24 @@ void getQuestionInfo(const CallbackInfo& args)
 	auto row = ids.fetchOne();
 	auto id = static_cast<int>(row[0]);
 	std::cout << "id " << id << '\n';
-	for (int i = 0; i < result[0].size() && i < 1000; ++i)
+	for (int i = 0; i < result[0].size() && i < 20; ++i)
 	{
+		//std::cout << i << '\n' << result[0][i] << '\n'<< result[1][i] << '\n' << result[2][i] << '\n';
+		//std::cout << i << '\n';
+		
 		std::string sql = "INSERT IGNORE INTO question_info (id, pos, row_info, col_info, dataset_id) VALUES(" 
-		+ std::to_string(i + 1) + ", '" + result[0][i] 
+		+ std::to_string(i + 1 + 20 * index) + ", '" + result[0][i] 
 		+ "', '"  + result[1][i]
 		+ "', '" + result[2][i] + "', '" + std::to_string(id) + "')";
-		//std::cout << i << '\n';
+
 		sess.sql(sql).execute();
 	}
 	std::cout << "insert finished\n";
+	return;
+
 	} catch (const std::exception& e){
-		std::cout << e.what();
+		std::cout << e.what() << '\n';
+		return;
 	}
 }
 
@@ -117,7 +119,7 @@ void generate(const CallbackInfo& args)
 		names.push_back(val);
 	}
 	QueryPrice qp;
-	qp.generate(args[0].As<String>(), names, args[2].As<Number>());
+	qp.generate(args[0].As<String>(), names, args[2].As<Number>(), args[3].As<Number>());
 }
 
 Object Init(Env env, Object exports)
