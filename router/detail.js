@@ -53,12 +53,18 @@ detail.get('/list', async (ctx) => {
     }
 }).get('/check', async (ctx) => {
     console.log(ctx.query)
+    let status = false
+    if (String(ctx.query.query) === '*')
+        status = true
+    else
+        status = cppModule.checkSQL(String(ctx.query.query))
     ctx.body = {
         code: 20000,
         data: {
-            status: cppModule.checkSQL(ctx.query.query)
+            status
         }
     }
+    
 }).post('/add_to_cart', async (ctx) => {
     let postData = await parsePostData(ctx)
     let parsedData = JSON.parse(postData)

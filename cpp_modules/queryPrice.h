@@ -2413,6 +2413,19 @@ public:
 	{
 		//parser.parse("SELECT * FROM games g, games_details gd WHERE g.GAME_ID = gd.GAME_ID");
 		//parser.parse("SELECT * FROM teams t, players p WHERE t.TEAM_ID = p.TEAM_ID");
+		init();
+		g_alpha = params[0];
+		g_a = params[1];
+		g_b0 = params[2];
+		if (sqlQuery == std::string("*", 1))
+		{
+			double price = 0;
+			for (int i = 0; i < rowNumber.size(); ++i)
+			{
+				price += rowNumber[i] * dim[i];
+			}
+			return price * g_b0;
+		}
 		parser.parse(sqlQuery);
 		parser.print();
 		//cin.get();
@@ -2434,9 +2447,7 @@ public:
 			datasize = atoi(argv[8]);
 			string out_file_name(argv[9]);
 			string queryPath = default_path + argv[10];*/
-		g_alpha = params[0];
-		g_a = params[1];
-		g_b0 = params[2];
+		
 
 		printf("g_alpha = %f, g_a = %f, g_b0 = %f, g_label = %d, g_viewNumber = %d, g_missing_rate = %f, datasize=%d, g_queryNumber = %d\n", g_alpha, g_a, g_b0, g_label, g_viewNumber, g_missing_rate, datasize, g_queryNumber);
 		//std::cout << out_file_name << endl;
@@ -2470,7 +2481,7 @@ public:
 		 //(ignore for now)Input algorithm type: h(=0, history-oblivious; =1, histroy-aware), algo(=0, exact,; =1, approx; =2, approx)
 		 //Input algorithm parameters: a (for quality function), \alpha(for price function), \rho(for base price) 
 		 //getchar();
-		init();           //初始化所有相关数据集的表的属性名
+		//init();           //初始化所有相关数据集的表的属性名
 
 		//readin_query(queryPath);
 		readin_history_query();
