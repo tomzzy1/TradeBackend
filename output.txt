@@ -2,7 +2,7 @@ The size of token is:
 0
 projecting ending!
 Time used for Eager Strategy: 
-1
+3
 Result set size: 
 29
 The max number of query lineage set: 
@@ -12,19 +12,19 @@ The number of tuple in Lineage  set:
 Time used of Approx: 
 1
 Approx's derived base price: 
-290
+235
 Approx's derived price: 
-232
+188
 The quality: 
-0
+1
 The current history-oblivious price is: 
-290
+235
 The current history-aware price is: 
 0
 The current size of token is: 
 0
 The final history-oblivious price is: 
-290
+235
 The final history-aware price is: 
 0
 The final size of token is: 
