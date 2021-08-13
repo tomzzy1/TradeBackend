@@ -18,6 +18,12 @@
             'GCC_ENABLE_CPP_EXCEPTIONS': 'YES'
           }
         }]
+      ],
+      "cflags!" : [
+        "-fno-exceptions"
+      ],
+      "cflags_cc!": [
+        "-fno-exceptions"
       ]
     }
   ]
