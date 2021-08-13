@@ -8,6 +8,7 @@ import recvFile from './receiveFile.js'
 import detail from './detail.js'
 import post from './post_question.js'
 import setting from './setting.js'
+import homepage from './homepage.js'
 
 let router = new Router(
 {
@@ -23,5 +24,6 @@ router.use(recvFile.routes(), recvFile.allowedMethods())
 router.use(detail.routes(), detail.allowedMethods())
 router.use(post.routes(), post.allowedMethods())
 router.use(setting.routes(), setting.allowedMethods())
+router.use(homepage.routes(), homepage.allowedMethods())
 
 export default router

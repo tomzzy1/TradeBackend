@@ -16,6 +16,7 @@ detail.get('/list', async (ctx) => {
     console.log(ctx.query)
     let id = ctx.query.id
     console.log(id)
+    await pool.query("INSERT INTO detail_count (date) VALUES(NOW())")
     let table_info = []
     let [ds_name, _0] = await pool.query('SELECT name FROM goods WHERE id = ?', id)
     console.log(ds_name[0].name)
@@ -84,7 +85,8 @@ detail.get('/list', async (ctx) => {
         price += 100
         complement = 1
     }
-    await pool.query("UPDATE goods SET need_complement = ?", complement)
+    await pool.query("INSERT INTO complement_count (date, need_complement) VALUES(NOW(), ?)", complement)
+    await pool.query("UPDATE goods SET need_complement = ? WHERE id = ?", [complement, parsedData.id])
     let [dummy, _2] = await pool.query("INSERT IGNORE INTO shopping_cart (number, query, date, dataset_id,\
         price) VALUES(1, ?, NOW(), ?, ?)", [parsedData.query, parsedData.id, price])
     ctx.body = {

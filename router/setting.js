@@ -74,7 +74,7 @@ setting.get('/list', async (ctx) => {
     let postData = await parsePostData(ctx)
     let parsedData = JSON.parse(postData)
     console.log(parsedData)
-    await pool.query("UPDATE goods_detail SET strategy = ? WHERE id = ?", [parsedData.strategy, parsedData.id])
+    await pool.query("UPDATE goods_detail SET strategy = ? WHERE id = ?", [parsedData.pricing_strategy, parsedData.id])
     ctx.body = 
     {
         code: 20000

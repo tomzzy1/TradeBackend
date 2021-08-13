@@ -48,7 +48,8 @@ crowdsourcing.get('/list', async (ctx) => {
     let parsedData = JSON.parse(postData)
     for (let answer of parsedData)
     {
-        await pool.query("INSERT IGNORE INTO answers (question_id, answer) VALUES(?, ?)", [answer.id, answer.answer])
+        await pool.query("INSERT IGNORE INTO answers (question_id, answer, date, point) VALUES(?, ?, NOW(), ?)"
+        ,[answer.id, answer.answer, answer.point])
     }
     ctx.body = {
         code: 20000

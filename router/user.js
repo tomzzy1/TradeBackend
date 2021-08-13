@@ -1,5 +1,6 @@
 import Router from 'koa-router'
 import {parsePostData, parseQueryStr} from '../utils/parsePostData.js'
+import pool from '../sql/pool.js'
 
 let user = new Router({
     prefix: '/user'
@@ -55,6 +56,8 @@ user.get('/info', async (ctx) =>
   //console.log(parsedData)
   console.log(ctx.query)
   let parsedData = JSON.parse(ctx.query.token)
+  let role = users[parsedData.token].roles[0]
+  await pool.query("INSERT INTO login_count (role, date) VALUES(?, NOW())", role)
   ctx.body = 
   {
     data: users[parsedData.token],
